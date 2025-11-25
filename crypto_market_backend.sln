@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36603.0 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "crypto_market_backend", "crypto_market_backend\crypto_market_backend.csproj", "{EEC6D8CE-24DD-4BE1-BFE8-BF4B06104BE6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repositories", "Repositories\Repositories.csproj", "{41F50DD3-1B7B-46B5-9E65-1B902991477B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Services\Services.csproj", "{5E9E269F-9746-4808-B2C8-139C853A9D93}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EEC6D8CE-24DD-4BE1-BFE8-BF4B06104BE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEC6D8CE-24DD-4BE1-BFE8-BF4B06104BE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEC6D8CE-24DD-4BE1-BFE8-BF4B06104BE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEC6D8CE-24DD-4BE1-BFE8-BF4B06104BE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41F50DD3-1B7B-46B5-9E65-1B902991477B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41F50DD3-1B7B-46B5-9E65-1B902991477B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41F50DD3-1B7B-46B5-9E65-1B902991477B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41F50DD3-1B7B-46B5-9E65-1B902991477B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E9E269F-9746-4808-B2C8-139C853A9D93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E9E269F-9746-4808-B2C8-139C853A9D93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E9E269F-9746-4808-B2C8-139C853A9D93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E9E269F-9746-4808-B2C8-139C853A9D93}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A9CD4129-4D0E-4E7E-8515-A79B1E01C39E}
+	EndGlobalSection
+EndGlobal

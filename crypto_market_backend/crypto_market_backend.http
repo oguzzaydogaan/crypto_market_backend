@@ -1,0 +1,6 @@
+@crypto_market_backend_HostAddress = http://localhost:5179
+
+GET {{crypto_market_backend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
