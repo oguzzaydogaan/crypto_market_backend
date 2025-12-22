@@ -42,5 +42,21 @@ namespace Repositories.Repositories
             Coins.Remove(coin);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<List<Coin>> GetFavoriteCoinsAsync()
+        {
+            return await Coins.Where(c => c.IsFavorite).ToListAsync();
+        }
+        public async Task<Coin> ToggleFavoriteCoinAsync(int id)
+        {
+            var coin = await Coins.FindAsync(id);
+            if (coin == null)
+            {
+                throw new Exception("Coin not found");
+            }
+            coin.IsFavorite = !coin.IsFavorite;
+            await _context.SaveChangesAsync();
+            return coin;
+        }
     }
 }

@@ -16,7 +16,7 @@ builder.Services.AddSignalR();
 
 builder.Services.AddScoped<CoinRepository>();
 builder.Services.AddScoped<CoinService>();
-builder.Services.AddHttpClient<KlineHelper>();
+builder.Services.AddHttpClient<BinanceHelper>();
 builder.Services.AddSingleton<BinanceStreamManager>();
 builder.Services.AddHostedService<TickerHelper>();
 

@@ -75,5 +75,51 @@ namespace crypto_market_backend.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+        [HttpGet("favorites")]
+        public async Task<IActionResult> GetFavoriteCoinsAsync()
+        {
+            try
+            {
+                var coins = await _coinService.GetFavoriteCoinsAsync();
+                return Ok(coins);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while getting favorites.");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+        [HttpPut("toggleFavorite/{id}")]
+        public async Task<IActionResult> ToggleFavoriteCoinAsync(int id)
+        {
+            try
+            {
+                var coin = await _coinService.ToggleFavoriteCoinAsync(id);
+                if (coin == null)
+                {
+                    return NotFound();
+                }
+                return Ok(coin);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while toggling favorite for coin ID {id}.");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpGet("trades/{symbol}")]
+        public async Task<IActionResult> GetRecentTrades(string symbol)
+        {
+            try
+            {
+                var trades = await _coinService.GetRecentTradesAsync(symbol);
+                return Ok(trades);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
     }
 }

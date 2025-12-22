@@ -1,14 +1,14 @@
-﻿using Repositories.DTOs;
+﻿using Newtonsoft.Json;
+using Repositories.DTOs;
 using System.Globalization;
-using System.Text.Json;
 
 namespace Services.Helpers
 {
-    public class KlineHelper
+    public class BinanceHelper
     {
         private readonly HttpClient _httpClient;
 
-        public KlineHelper(HttpClient httpClient)
+        public BinanceHelper(HttpClient httpClient)
         {
             _httpClient = httpClient;
             if (_httpClient.BaseAddress == null)
@@ -31,7 +31,7 @@ namespace Services.Helpers
                 }
 
                 var jsonString = await response.Content.ReadAsStringAsync();
-                var rawData = JsonSerializer.Deserialize<List<List<object>>>(jsonString);
+                var rawData = System.Text.Json.JsonSerializer.Deserialize<List<List<object>>>(jsonString);
 
                 var candles = new List<KlineDTO>();
 
@@ -58,6 +58,21 @@ namespace Services.Helpers
                 Console.WriteLine($"KlineHelper Hatası: {ex.Message}");
                 return new List<KlineDTO>();
             }
+        }
+        public async Task<List<TradeDTO>> GetRecentTradesAsync(string symbol)
+        {
+            var url = $"/api/v3/trades?symbol={symbol}&limit=20";
+
+            var response = await _httpClient.GetAsync(url);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var trades = JsonConvert.DeserializeObject<List<TradeDTO>>(content);
+                return trades;
+            }
+
+            return new List<TradeDTO>();
         }
 
         private decimal ParseDecimal(object value)

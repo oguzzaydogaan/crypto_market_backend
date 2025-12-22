@@ -11,10 +11,10 @@ namespace Services
     public class CoinService
     {
         public CoinRepository _coinRepository;
-        public KlineHelper _klineHelper;
+        public BinanceHelper _klineHelper;
         private readonly IHubContext<CryptoHub> _hubContext;
         public IMapper _mapper;
-        public CoinService(CoinRepository coinRepository, IMapper mapper, KlineHelper klineHelper, IHubContext<CryptoHub> hubContext)
+        public CoinService(CoinRepository coinRepository, IMapper mapper, BinanceHelper klineHelper, IHubContext<CryptoHub> hubContext)
         {
             _coinRepository = coinRepository;
             _mapper = mapper;
@@ -36,10 +36,22 @@ namespace Services
             var added = await _coinRepository.AddCoinAsync(coin);
             return added;
         }
-
+        public async Task<List<Coin>> GetFavoriteCoinsAsync()
+        {
+            return await _coinRepository.GetFavoriteCoinsAsync();
+        }
+        public async Task<Coin> ToggleFavoriteCoinAsync(int id)
+        {
+            return await _coinRepository.ToggleFavoriteCoinAsync(id);
+        }
         public async Task<List<KlineDTO>> GetKlinesBySymbolAsync(string symbol)
         {
             return await _klineHelper.GetKlinesBySymbolAsync(symbol);
+        }
+
+        public async Task<List<TradeDTO>> GetRecentTradesAsync(string symbol)
+        {
+            return await _klineHelper.GetRecentTradesAsync(symbol);
         }
     }
 }

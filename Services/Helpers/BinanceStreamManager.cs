@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using Repositories.DTOs;
 using Services.Hubs;
 using System.Collections.Concurrent;
-using System.Text.Json;
+using System.Text.Json.Nodes;
 using Websocket.Client;
 
 namespace Services.Helpers
@@ -22,7 +21,9 @@ namespace Services.Helpers
         {
             symbol = symbol.ToLower();
             _subscriberCounts.AddOrUpdate(symbol, 1, (key, count) => count + 1);
+
             if (_activeSockets.ContainsKey(symbol)) return;
+
             await StartBinanceSocket(symbol);
         }
 
@@ -47,7 +48,7 @@ namespace Services.Helpers
 
         private async Task StartBinanceSocket(string symbol)
         {
-            var url = new Uri($"wss://stream.binance.com:9443/ws/{symbol.ToLower()}@kline_1h");
+            var url = new Uri($"wss://stream.binance.com:9443/stream?streams={symbol}@kline_1h/{symbol}@trade");
 
             var client = new WebsocketClient(url);
             client.ReconnectTimeout = TimeSpan.FromSeconds(5);
@@ -58,34 +59,53 @@ namespace Services.Helpers
                 {
                     try
                     {
-                        var rawData = JsonSerializer.Deserialize<SocketKlineEvent>(msg.Text);
-                        if (rawData != null && rawData.Kline != null)
+                        var jsonNode = JsonNode.Parse(msg.Text);
+                        var streamName = jsonNode?["stream"]?.ToString();
+                        var data = jsonNode?["data"];
+
+                        if (data == null || streamName == null) return;
+                        if (streamName.EndsWith("@kline_1h"))
                         {
-                            var cleanData = new
+                            var k = data["k"];
+                            if (k != null)
                             {
-                                s = rawData.Symbol,           // Sembol (BNBBTC)
-                                t = rawData.Kline.OpenTime,   // Zaman
-                                o = rawData.Kline.OpenPrice,  // Açılış
-                                c = rawData.Kline.ClosePrice, // Kapanış (Şu anki fiyat)
-                                h = rawData.Kline.HighPrice,  // Yüksek
-                                l = rawData.Kline.LowPrice,   // Düşük
-                                v = rawData.Kline.Volume,     // Hacim
-                                x = rawData.Kline.IsClosed    // Mum bitti mi?
+                                var cleanData = new
+                                {
+                                    s = data["s"]?.ToString(),              // Symbol
+                                    t = k["t"]?.GetValue<long>(),           // Time
+                                    o = k["o"]?.ToString(),                 // Open
+                                    c = k["c"]?.ToString(),                 // Close
+                                    h = k["h"]?.ToString(),                 // High
+                                    l = k["l"]?.ToString(),                 // Low
+                                    v = k["v"]?.ToString(),                 // Volume
+                                    x = k["x"]?.GetValue<bool>()            // IsClosed
+                                };
+                                await _hubContext.Clients.Group(symbol.ToUpper()).SendAsync("ReceiveKline", cleanData);
+                            }
+                        }
+                        else if (streamName.EndsWith("@trade"))
+                        {
+                            var cleanTrade = new
+                            {
+                                s = data["s"]?.ToString(),        // Symbol
+                                p = data["p"]?.ToString(),        // Price
+                                q = data["q"]?.ToString(),        // Quantity
+                                T = data["T"]?.GetValue<long>(),  // Trade Time
+                                m = data["m"]?.GetValue<bool>()   // IsBuyerMaker (True=Sell, False=Buy)
                             };
-                            await _hubContext.Clients.Group(symbol.ToUpper()).SendAsync("ReceiveKline", cleanData);
-                            Console.WriteLine($"--> {symbol}: {cleanData.c}");
+                            await _hubContext.Clients.Group(symbol.ToUpper()).SendAsync("ReceiveTrade", cleanTrade);
                         }
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"[SOCKET HATA] Parse edilemedi: {ex.Message}");
+                        Console.WriteLine($"[SOCKET PARSE ERROR] {symbol}: {ex.Message}");
                     }
                 }
             });
 
             await client.Start();
             _activeSockets.TryAdd(symbol, client);
-            Console.WriteLine($"[MANAGER] {symbol.ToUpper()} için dinleme başladı.");
+            Console.WriteLine($"[MANAGER] {symbol.ToUpper()} için Kline & Trade yayını başladı.");
         }
 
         private void StopBinanceSocket(string symbol)
@@ -93,7 +113,7 @@ namespace Services.Helpers
             if (_activeSockets.TryRemove(symbol, out var client))
             {
                 client.Dispose();
-                Console.WriteLine($"[MANAGER] {symbol.ToUpper()} yayını DURDURULDU (İzleyen kalmadı).");
+                Console.WriteLine($"[MANAGER] {symbol.ToUpper()} yayını DURDURULDU.");
             }
         }
     }
