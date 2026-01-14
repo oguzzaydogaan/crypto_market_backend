@@ -11,13 +11,11 @@ namespace Services.Hubs
         {
             _streamManager = streamManager;
         }
-
         public async Task JoinCoinGroup(string symbol)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, symbol.ToUpper());
             await _streamManager.JoinStreamAsync(symbol);
         }
-
         public async Task LeaveCoinGroup(string symbol)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, symbol.ToUpper());

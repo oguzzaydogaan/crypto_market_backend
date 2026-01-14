@@ -14,11 +14,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddSignalR();
 
-builder.Services.AddScoped<CoinRepository>();
-builder.Services.AddScoped<CoinService>();
 builder.Services.AddHttpClient<BinanceHelper>();
 builder.Services.AddSingleton<BinanceStreamManager>();
-builder.Services.AddHostedService<TickerHelper>();
+builder.Services.AddSingleton<BinanceTickerManager>();
+builder.Services.AddHostedService<TickerWorker>();
+builder.Services.AddScoped<CoinRepository>();
+builder.Services.AddScoped<CoinService>();
 
 builder.Services.AddAutoMapper(typeof(CoinProfile));
 builder.Services.AddControllers();

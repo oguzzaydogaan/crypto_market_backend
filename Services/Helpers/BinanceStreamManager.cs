@@ -16,7 +16,6 @@ namespace Services.Helpers
         {
             _hubContext = hubContext;
         }
-
         public async Task JoinStreamAsync(string symbol)
         {
             symbol = symbol.ToLower();
@@ -26,7 +25,6 @@ namespace Services.Helpers
 
             await StartBinanceSocket(symbol);
         }
-
         public async Task LeaveStreamAsync(string symbol)
         {
             symbol = symbol.ToLower();
@@ -45,7 +43,6 @@ namespace Services.Helpers
                 }
             }
         }
-
         private async Task StartBinanceSocket(string symbol)
         {
             var url = new Uri($"wss://stream.binance.com:9443/stream?streams={symbol}@kline_1h/{symbol}@trade");
@@ -107,7 +104,6 @@ namespace Services.Helpers
             _activeSockets.TryAdd(symbol, client);
             Console.WriteLine($"[MANAGER] {symbol.ToUpper()} için Kline & Trade yayını başladı.");
         }
-
         private void StopBinanceSocket(string symbol)
         {
             if (_activeSockets.TryRemove(symbol, out var client))

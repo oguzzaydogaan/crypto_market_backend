@@ -7,7 +7,6 @@ namespace Services.Helpers
     public class BinanceHelper
     {
         private readonly HttpClient _httpClient;
-
         public BinanceHelper(HttpClient httpClient)
         {
             _httpClient = httpClient;
@@ -16,7 +15,6 @@ namespace Services.Helpers
                 _httpClient.BaseAddress = new Uri("https://api.binance.com");
             }
         }
-
         public async Task<List<KlineDTO>> GetKlinesBySymbolAsync(string symbol)
         {
             string url = $"/api/v3/klines?symbol={symbol.ToUpper()}&interval=1h&limit=100";
@@ -74,7 +72,16 @@ namespace Services.Helpers
 
             return new List<TradeDTO>();
         }
-
+        public async Task<bool> VerifyCoinAsync(string symbol)
+        {
+            var url = $"/api/v3/avgPrice?symbol={symbol}";
+            var res = await _httpClient.GetAsync(url);
+            if (res.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            return false;
+        }
         private decimal ParseDecimal(object value)
         {
             if (value == null) return 0;

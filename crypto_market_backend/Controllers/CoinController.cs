@@ -61,6 +61,23 @@ namespace crypto_market_backend.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                if (await _coinService.DeleteCoinAsync(id))
+                {
+                    return Ok();
+                }    
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while adding a new coin.");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
         [HttpGet("{symbol}/klines")]
         public async Task<IActionResult> GetKlinesBySymbol(string symbol)
         {
@@ -107,7 +124,6 @@ namespace crypto_market_backend.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-
         [HttpGet("trades/{symbol}")]
         public async Task<IActionResult> GetRecentTrades(string symbol)
         {
